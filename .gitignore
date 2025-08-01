@@ -20,5 +20,5 @@ Thumbs.db
 
 # Output files from your project (adjust as needed)
 # If your transcriber outputs to a specific file, ignore it here
-output_tabs.txt
+output/
 temp_recordings/ # If you save temp audio files here
