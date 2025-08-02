@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 import sounddevice as sd
-import matplotlib.pyplot as plt
+from utils import visualize
 # import scipy
 # import pydub
 
@@ -25,6 +25,7 @@ expected_ranges = {
     'E4': (320, 340)
 }
 
+
 def load_audio_file(filename):
     return librosa.load(filename)
 
@@ -40,46 +41,34 @@ def onset_detect(y,sr):
     onset_frames = librosa.onset.onset_detect(y=y, sr=sr, units='time')
     return onset_frames
 
-def visualize(y, sr, f0, onsets):
-    # Create the plot
-    fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(10, 6))
-
-    # Plot the audio waveform
-    librosa.display.waveshow(y, sr=sr, ax=ax[0])
-    ax[0].set(title='Audio Waveform')
-    ax[0].set_ylabel('Amplitude')
-
-    # Plot the fundamental frequency (pitch)
-    times = librosa.times_like(f0)
-    ax[1].plot(times, f0, label='f0', color='r', linewidth=2)
-    ax[1].set(title='Pitch Detection')
-    ax[1].set_ylabel('Frequency (Hz)')
-    ax[1].set_xlabel('Time (s)')
-    ax[1].grid(True)
-    
-    # Overlay the onset times as vertical lines
-    # This line now uses the full height of the plot for clarity
-    ax[1].vlines(onsets, 0, ax[1].get_ylim()[1], color='g', linestyle='--', label='Onsets')
-    
-    ax[1].legend(loc='upper right')
-
-    # Zoom in on the beginning of the audio to see the onset
-    # ax[0].set_xlim(0, 1)
-    # ax[1].set_xlim(0, 1)
-
-    # Display the plot
-    plt.tight_layout()
-    plt.show()
-
 if __name__ == '__main__':
     print('hello world')
     y, sr = load_audio_file('./data/A2.wav')
     f0, voiced_flag = get_pitch(y,sr)
     onsets = onset_detect(y,sr)
 
-    # Create a new array with only the pitches we are confident about 
-    confident_f0 = f0[voiced_flag]
     print(f'Detected pitch: {f0}')
     print(f'Detected onsets (in seconds): {onsets}')
 
-    visualize(y, sr, f0, onsets)
+
+    # Create a new array with only the pitches we are confident about 
+    confident_f0 = f0[voiced_flag]
+
+    # get the start tiem of the first note
+    if len(onsets) > 0:
+        first_onset_time = onsets[0]
+
+        frames = librosa.time_to_frames(first_onset_time,sr=sr)
+
+        # create a new array that only contains the pitch data from the onset onwards
+        note_pitches = confident_f0[frames:]
+
+        # Calculate the final representative pitch for the note
+        final_pitch = np.median(note_pitches)
+        print(f"Final detected pitch (median): {final_pitch} Hz")
+        print(f'frames: {frames}')
+        print(f'note_pitches: {note_pitches}')
+
+
+    
+    # visualize(y, sr, f0, onsets)
