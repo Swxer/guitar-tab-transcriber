@@ -65,9 +65,11 @@ if __name__ == '__main__':
 
         # Calculate the final representative pitch for the note
         final_pitch = np.median(note_pitches)
+        final_note = librosa.hz_to_note(final_pitch)
         print(f"Final detected pitch (median): {final_pitch} Hz")
         print(f'frames: {frames}')
         print(f'note_pitches: {note_pitches}')
+        print(f'final note: {final_note}')
 
 
     
