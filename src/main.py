@@ -38,32 +38,40 @@ def get_pitch(y,sr):
     return f0, voiced_flag
 
 def onset_detect(y,sr):
-    onset_frames = librosa.onset.onset_detect(y=y, sr=sr, units='time')
-    return onset_frames
+    return librosa.onset.onset_detect(y=y, sr=sr, units='time')
+
 
 if __name__ == '__main__':
     print('hello world')
+
+    # sr - sample rate
+    # y - numpy array that represents amplitude of sound wave at each sample point
     y, sr = load_audio_file('./data/A2.wav')
+
+    # f0 - fundamental frequency, an array that contains estimated funamental pitch for each frame of the audio
+    # voiced_flag is a boolean array that corresponds one-to-one with f0, 
+    # indicates whether a fundamental frequency was detected
+    # onsets_frame is an array that contains the time (in seconds) where a note begins
     f0, voiced_flag = get_pitch(y,sr)
-    onsets = onset_detect(y,sr)
+    onsets_frame = onset_detect(y,sr)
 
     print(f'Detected pitch: {f0}')
-    print(f'Detected onsets (in seconds): {onsets}')
+    print(f'Detected onsets (in seconds): {onsets_frame}')
 
 
-    # Create a new array with only the pitches we are confident about 
+    # create a new array with only the pitches we are confident about 
     confident_f0 = f0[voiced_flag]
 
     # get the start tiem of the first note
-    if len(onsets) > 0:
-        first_onset_time = onsets[0]
+    if len(onsets_frame) > 0:
+        first_onset_time = onsets_frame[0]
 
         frames = librosa.time_to_frames(first_onset_time,sr=sr)
 
         # create a new array that only contains the pitch data from the onset onwards
         note_pitches = confident_f0[frames:]
 
-        # Calculate the final representative pitch for the note
+        # calculate the final representative pitch for the note
         final_pitch = np.median(note_pitches)
         final_note = librosa.hz_to_note(final_pitch)
         print(f"Final detected pitch (median): {final_pitch} Hz")

@@ -1,24 +1,4 @@
 # Virtual environment
 venv/
-.venv/  # Just in case you name it differently, or for other tools
-
-# Byte-code files
-*.pyc
 __pycache__/
-
-# IDE-specific files
-.vscode/
-.idea/  # For PyCharm users
-
-# Operating System files
-.DS_Store
-Thumbs.db
-
-# Logs and databases
-*.log
-*.sqlite3
-
-# Output files from your project (adjust as needed)
-# If your transcriber outputs to a specific file, ignore it here
 output/
-temp_recordings/ # If you save temp audio files here
