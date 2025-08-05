@@ -1,4 +1,3 @@
-import librosa
 import numpy as np
 import sounddevice as sd
 from utils import visualize, load_audio_file, get_pitch, get_detected_notes, onset_detect
