@@ -65,7 +65,7 @@ def get_pitch(y,sr):
 def onset_detect(y,sr):
     return librosa.onset.onset_detect(y=y, sr=sr, units='time')
 
-def get_detected_notes(onsets_frame, f0, voiced_flag):
+def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
     detected_notes = []
     # get the start tiem of the first note
     if len(onsets_frame) > 0:
@@ -89,15 +89,18 @@ def get_detected_notes(onsets_frame, f0, voiced_flag):
             # create a new array with only the pitches we are confident about 
             confident_f0 = f0_segment[voiced_flag_segment]
 
-
-            # calculate the final representative pitch for the note
-            final_pitch = np.median(confident_f0)
-            print(f'note_pitches: {final_pitch}')
-            final_note = librosa.hz_to_note(final_pitch)
-            # print(f"Final detected pitch (median): {final_pitch} Hz")
-            # print(f'frames: {frames}')
+            if len(confident_f0) > 0:
+                # calculate the final representative pitch for the note
+                final_pitch = np.median(confident_f0)
+                # print(f'note_pitches: {final_pitch}')
+                final_note = librosa.hz_to_note(final_pitch)
+                # print(f"Final detected pitch (median): {final_pitch} Hz")
+                # print(f'frames: {frames}')
+                
+                # print(f'final note: {final_note}')
+                detected_notes.append(final_note)
+            else:
+                detected_notes.append('Rest')
             
-            print(f'final note: {final_note}')
-            detected_notes.append(final_note)
 
     return detected_notes

@@ -8,7 +8,7 @@ if __name__ == '__main__':
     print('hello world')
     # sr - sample rate
     # y - numpy array that represents amplitude of sound wave at each sample point
-    y, sr = load_audio_file('./data/twinkle.wav')
+    y, sr = load_audio_file('./data/Guitar-Ballad.wav')
 
     # f0 - fundamental frequency, an array that contains estimated funamental pitch for each frame of the audio
     # voiced_flag is a boolean array that corresponds one-to-one with f0, 
@@ -17,10 +17,9 @@ if __name__ == '__main__':
     f0, voiced_flag = get_pitch(y,sr)
     onsets_frame = onset_detect(y,sr)
 
-    print(f'Detected onsets (in seconds): {onsets_frame}')
+    # print(f'Detected onsets (in seconds): {onsets_frame}')
 
-    detected_notes = get_detected_notes(onsets_frame,f0,voiced_flag)
-
+    detected_notes = get_detected_notes(y,sr,onsets_frame,f0,voiced_flag)
 
     print(detected_notes)
     
