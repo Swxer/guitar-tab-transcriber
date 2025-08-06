@@ -56,6 +56,7 @@ def load_audio_file(filename):
 
 def get_pitch(y,sr):
     
+    # lowest note range for EADGBe tuning
     fmin = librosa.note_to_hz('E2')
     fmax = librosa.note_to_hz('C7')
     
@@ -67,21 +68,23 @@ def onset_detect(y,sr):
 
 def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
     detected_notes = []
-    # get the start tiem of the first note
     if len(onsets_frame) > 0:
 
+        # get the starting frame of each note
         for i in range(len(onsets_frame)):
 
+            # get the frame where the note starts
             onset_time = onsets_frame[i]
 
+            # the start time of the note
             start_frame = librosa.time_to_frames(onset_time,sr=sr)
 
+            # the end time of the note
             if i < len(onsets_frame) - 1:
                 end_time = onsets_frame[i+1]
             else:
                 end_time = librosa.get_duration(y=y,sr=sr)
             end_frame = librosa.time_to_frames(end_time,sr=sr)
-
 
             f0_segment = f0[start_frame:end_frame]
             voiced_flag_segment = voiced_flag[start_frame:end_frame]
@@ -104,3 +107,6 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
             
 
     return detected_notes
+
+def notes_to_tab(detected_notes):
+    pass

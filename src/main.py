@@ -1,6 +1,13 @@
 import numpy as np
 import sounddevice as sd
-from utils import visualize, load_audio_file, get_pitch, get_detected_notes, onset_detect
+from utils import (
+    visualize, 
+    load_audio_file, 
+    get_pitch, 
+    get_detected_notes, 
+    onset_detect, 
+    notes_to_tab
+)
 # import scipy
 # import pydub
 
@@ -8,7 +15,7 @@ if __name__ == '__main__':
     print('hello world')
     # sr - sample rate
     # y - numpy array that represents amplitude of sound wave at each sample point
-    y, sr = load_audio_file('./data/Guitar-Ballad.wav')
+    y, sr = load_audio_file('./data/twinkle.wav')
 
     # f0 - fundamental frequency, an array that contains estimated funamental pitch for each frame of the audio
     # voiced_flag is a boolean array that corresponds one-to-one with f0, 
@@ -20,6 +27,8 @@ if __name__ == '__main__':
     # print(f'Detected onsets (in seconds): {onsets_frame}')
 
     detected_notes = get_detected_notes(y,sr,onsets_frame,f0,voiced_flag)
+
+    notes
 
     print(detected_notes)
     
