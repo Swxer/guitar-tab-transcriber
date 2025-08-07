@@ -2,22 +2,13 @@ import librosa
 import numpy as np
 import matplotlib.pyplot as plt
 
-guitar_notes = {
-    'E2': 82.41,
-    'A2': 110,
-    'D3': 146.83,
-    'G3': 196,
-    'B3': 246.94,
-    'E4': 329.63
-}
-
-expected_ranges = {
-    'E2': (75, 90),
-    'A2': (100, 120),
-    'D3': (140, 160),
-    'G3': (190, 210),
-    'B3': (240, 260),
-    'E4': (320, 340)
+guitar_string_midi = {
+    'E4': librosa.note_to_midi('E4'),
+    'B3': librosa.note_to_midi('B3'),
+    'G3': librosa.note_to_midi('G3'),
+    'D3': librosa.note_to_midi('D3'),
+    'A2': librosa.note_to_midi('A2'),
+    'E2': librosa.note_to_midi('E2'),
 }
 
 def visualize(y, sr, f0, onsets):
@@ -108,5 +99,33 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
 
     return detected_notes
 
-def notes_to_tab(detected_notes):
-    pass
+def note_to_tab(detected_notes):
+
+    mapped_notes = []
+
+    for note in detected_notes:
+        current_note_midi = librosa.note_to_midi(note)
+        found_position = False
+
+        # loop through each open string's midi value
+        for string_name, open_midi in guitar_string_midi.items():
+            fret = current_note_midi - open_midi
+            
+            # check if this is a valid fret on the guitar
+            if 0 <= fret <= 24: 
+                mapped_notes.append({
+                    "note": note,
+                    "string": string_name,
+                    "fret": fret
+                })
+                found_position = True
+                break # remove this when you want to look at other possible position 
+
+        if not found_position:
+            mapped_notes.append({
+                "note": note,
+                "string": "Unknown",
+                "fret": "Unknown"
+            })
+                
+    return mapped_notes

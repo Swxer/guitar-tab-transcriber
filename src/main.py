@@ -6,7 +6,7 @@ from utils import (
     get_pitch, 
     get_detected_notes, 
     onset_detect, 
-    notes_to_tab
+    note_to_tab
 )
 # import scipy
 # import pydub
@@ -27,9 +27,11 @@ if __name__ == '__main__':
     # print(f'Detected onsets (in seconds): {onsets_frame}')
 
     detected_notes = get_detected_notes(y,sr,onsets_frame,f0,voiced_flag)
-
-    notes
-
     print(detected_notes)
+
+    mapped_notes = note_to_tab(detected_notes)
+    print(mapped_notes)
+
+    
     
     # visualize(y, sr, f0, onsets)
