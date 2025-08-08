@@ -1,7 +1,6 @@
 import numpy as np
 import sounddevice as sd
 from utils import (
-    visualize, 
     load_audio_file, 
     get_pitch, 
     get_detected_notes, 
@@ -12,10 +11,10 @@ from utils import (
 # import pydub
 
 if __name__ == '__main__':
-    print('hello world')
+    
     # sr - sample rate
     # y - numpy array that represents amplitude of sound wave at each sample point
-    y, sr = load_audio_file('./data/twinkle.wav')
+    y, sr = load_audio_file()
 
     # f0 - fundamental frequency, an array that contains estimated funamental pitch for each frame of the audio
     # voiced_flag is a boolean array that corresponds one-to-one with f0, 
@@ -31,7 +30,5 @@ if __name__ == '__main__':
 
     mapped_notes = note_to_tab(detected_notes)
     print(mapped_notes)
-
-    
     
     # visualize(y, sr, f0, onsets)
