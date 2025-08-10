@@ -13,6 +13,15 @@ guitar_string_midi = {
     'E2': librosa.note_to_midi('E2'),
 }
 
+guitar_string_number = {
+    'E4': 0,
+    'B3': 1,
+    'G3': 2,
+    'D3': 3,
+    'A2': 4,
+    'E2': 6,
+}
+
 SAMPLE_RATE = 44100
 
 def load_audio_file():
@@ -21,6 +30,7 @@ def load_audio_file():
             file_path = input('Drag and drop your audio file here and press Enter: ').strip()
 
             # handles quotes and spaces
+            # revert the index to 0 when project is done
             cleaned_path = shlex.split(file_path)[1]
 
             return librosa.load(os.path.normpath(cleaned_path))
@@ -112,3 +122,25 @@ def note_to_tab(detected_notes):
             })
                 
     return mapped_notes
+
+def tab_append(tab,template):
+    for i in range(len(tab)):
+        tab[i].append(template[i])
+
+def create_ascii_tabs(mapped_notes):
+    tab = [['e |'],['B |'],['G |'],['D |'],['A |'],['E |']]
+
+    i = 0
+    while i < len(mapped_notes):
+        template = ['-']*6
+        note = mapped_notes[i]
+        template[guitar_string_number[note['string']]] = str(note['fret'])
+
+        tab_append(tab,template)
+
+        i += 1
+
+    # output txt file 
+    with open('output.txt','w') as f:
+        for string in tab:
+            f.write(''.join(string) + '\n')

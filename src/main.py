@@ -5,7 +5,8 @@ from utils import (
     get_pitch, 
     get_detected_notes, 
     onset_detect, 
-    note_to_tab
+    note_to_tab,
+    create_ascii_tabs
 )
 # import scipy
 # import pydub
@@ -30,5 +31,8 @@ if __name__ == '__main__':
 
     mapped_notes = note_to_tab(detected_notes)
     print(mapped_notes)
+
+    create_ascii_tabs(mapped_notes)
+    
     
     # visualize(y, sr, f0, onsets)
