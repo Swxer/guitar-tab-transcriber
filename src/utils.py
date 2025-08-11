@@ -57,10 +57,10 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
         # get the starting frame of each note
         for i in range(len(onsets_frame)):
 
-            # get the frame where the note starts
+            # get the time where the note starts
             onset_time = onsets_frame[i]
 
-            # the start time of the note
+            # convert the start time to frame
             start_frame = librosa.time_to_frames(onset_time,sr=sr)
 
             # the end time of the note
@@ -76,6 +76,8 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
             # create a new array with only the pitches we are confident about 
             confident_f0 = f0_segment[voiced_flag_segment]
 
+            duration = librosa.frames_to_time(end_frame,sr=sr) - onset_time
+
             if len(confident_f0) > 0:
                 # calculate the final representative pitch for the note
                 final_pitch = np.median(confident_f0)
@@ -85,9 +87,9 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
                 # print(f'frames: {frames}')
                 
                 # print(f'final note: {final_note}')
-                detected_notes.append(final_note)
+                detected_notes.append((final_note, float(onset_time), float(duration)))
             else:
-                detected_notes.append('Rest')
+                detected_notes.append(('Rest', float(onset_time), float(duration)))
             
 
     return detected_notes
@@ -96,7 +98,7 @@ def note_to_tab(detected_notes):
 
     mapped_notes = []
 
-    for note in detected_notes:
+    for note, onset_time, duration in detected_notes:
         current_note_midi = librosa.note_to_midi(note)
         found_position = False
 
@@ -109,7 +111,9 @@ def note_to_tab(detected_notes):
                 mapped_notes.append({
                     "note": note,
                     "string": string_name,
-                    "fret": fret
+                    "fret": fret,
+                    "onset": onset_time,
+                    "duration": duration
                 })
                 found_position = True
                 break # remove this when you want to look at other possible position 
@@ -118,7 +122,9 @@ def note_to_tab(detected_notes):
             mapped_notes.append({
                 "note": note,
                 "string": "Unknown",
-                "fret": "Unknown"
+                "fret": "Unknown",
+                "onset": onset_time,
+                "duration": duration
             })
                 
     return mapped_notes
