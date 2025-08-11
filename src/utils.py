@@ -123,22 +123,28 @@ def note_to_tab(detected_notes):
                 
     return mapped_notes
 
-def tab_append(tab,template):
-    for i in range(len(tab)):
-        tab[i].append(template[i])
-
 def create_ascii_tabs(mapped_notes):
     tab = [['e |'],['B |'],['G |'],['D |'],['A |'],['E |']]
 
-    i = 0
-    while i < len(mapped_notes):
-        template = ['-']*6
-        note = mapped_notes[i]
-        template[guitar_string_number[note['string']]] = str(note['fret'])
+    # loop through the mapped notes and build the tab
+    for note in mapped_notes:
+        column = ['-'] * 6
 
-        tab_append(tab,template)
+        fret = str(note['fret'])
+        string_name = note['string']
 
-        i += 1
+        if string_name in guitar_string_number:
+            string_index = guitar_string_number[string_name]
+            column[string_index] = fret
+
+        # append the entire column to the tab
+        for i in range(len(tab)):
+            tab[i].append(column[i])
+
+    # indicate the end of the tab
+    end = ['|'] * 6
+    for i in range(len(tab)):
+        tab[i].append(end[i])
 
     # output txt file 
     with open('output.txt','w') as f:
