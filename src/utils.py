@@ -19,7 +19,7 @@ guitar_string_number = {
     'G3': 2,
     'D3': 3,
     'A2': 4,
-    'E2': 6,
+    'E2': 5,
 }
 
 SAMPLE_RATE = 44100
@@ -89,7 +89,7 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
                 # print(f'final note: {final_note}')
                 detected_notes.append((final_note, float(onset_time), float(duration)))
             else:
-                detected_notes.append(('Rest', float(onset_time), float(duration)))
+                detected_notes.append(('rest', float(onset_time), float(duration)))
             
 
     return detected_notes
@@ -99,6 +99,18 @@ def note_to_tab(detected_notes):
     mapped_notes = []
 
     for note, onset_time, duration in detected_notes:
+
+
+        if note == 'rest':
+            mapped_notes.append({
+                "note": "rest",
+                "string": "Unknown",
+                "fret": "Unknown",
+                "onset": onset_time,
+                "duration": duration
+            })
+            continue
+
         current_note_midi = librosa.note_to_midi(note)
         found_position = False
 
@@ -136,12 +148,13 @@ def create_ascii_tabs(mapped_notes):
     for note in mapped_notes:
         column = ['-'] * 6
 
-        fret = str(note['fret'])
-        string_name = note['string']
+        if note['fret'] != 'Unknown' and note['string'] != 'Unknown':
+            fret = str(note['fret'])
+            string_name = note['string']
 
-        if string_name in guitar_string_number:
-            string_index = guitar_string_number[string_name]
-            column[string_index] = fret
+            if string_name in guitar_string_number:
+                string_index = guitar_string_number[string_name]
+                column[string_index] = fret
 
         # append the entire column to the tab
         for i in range(len(tab)):
@@ -155,4 +168,4 @@ def create_ascii_tabs(mapped_notes):
     # output txt file 
     with open('output.txt','w') as f:
         for string in tab:
-            f.write(''.join(string) + '\n')
+            f.write('-'.join(string) + '\n')
