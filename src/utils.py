@@ -1,6 +1,5 @@
 import librosa
 import numpy as np
-import matplotlib.pyplot as plt
 import shlex
 import os
 
@@ -22,16 +21,13 @@ guitar_string_number = {
     'E2': 5,
 }
 
-SAMPLE_RATE = 44100
-
 def load_audio_file():
     while True:
         try:
             file_path = input('Drag and drop your audio file here and press Enter: ').strip()
 
             # handles quotes and spaces
-            # revert the index to 0 when project is done
-            cleaned_path = shlex.split(file_path)[1]
+            cleaned_path = shlex.split(file_path)[0]
 
             return librosa.load(os.path.normpath(cleaned_path))
         except Exception as e:
@@ -81,12 +77,7 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
             if len(confident_f0) > 0:
                 # calculate the final representative pitch for the note
                 final_pitch = np.median(confident_f0)
-                # print(f'note_pitches: {final_pitch}')
                 final_note = librosa.hz_to_note(final_pitch)
-                # print(f"Final detected pitch (median): {final_pitch} Hz")
-                # print(f'frames: {frames}')
-                
-                # print(f'final note: {final_note}')
                 detected_notes.append((final_note, float(onset_time), float(duration)))
             else:
                 detected_notes.append(('rest', float(onset_time), float(duration)))
@@ -97,10 +88,7 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
 def note_to_tab(detected_notes):
 
     mapped_notes = []
-
     for note, onset_time, duration in detected_notes:
-
-
         if note == 'rest':
             mapped_notes.append({
                 "note": "rest",
@@ -169,3 +157,5 @@ def create_ascii_tabs(mapped_notes):
     with open('output.txt','w') as f:
         for string in tab:
             f.write('-'.join(string) + '\n')
+
+    print('Done!')
