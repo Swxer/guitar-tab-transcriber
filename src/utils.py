@@ -27,7 +27,7 @@ def load_audio_file():
             file_path = input('Drag and drop your audio file here and press Enter: ').strip()
 
             # handles quotes and spaces
-            cleaned_path = shlex.split(file_path)[0]
+            cleaned_path = shlex.split(file_path)[1]
 
             return librosa.load(os.path.normpath(cleaned_path))
         except Exception as e:
