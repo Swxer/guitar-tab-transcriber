@@ -21,61 +21,11 @@ def load_audio_file():
             print(f"\nError: Could not load the file. Please ensure it is a valid audio format (e.g., .wav, .mp3).")
             print(f"Details: {e}\n")
 
-def get_pitch(y,sr):
-    
-    # lowest note range for EADGBe tuning
-    fmin = librosa.note_to_hz('E2')
-    fmax = librosa.note_to_hz('C7')
-    
-    f0, voiced_flag, voiced_prob = librosa.pyin(y, fmin=fmin, fmax=fmax, sr=sr)
-    return f0, voiced_flag
-
-def onset_detect(y,sr):
-    return librosa.onset.onset_detect(y=y, sr=sr, units='time')
-
-def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
-    detected_notes = []
-    if len(onsets_frame) > 0:
-
-        # get the starting frame of each note
-        for i in range(len(onsets_frame)):
-
-            # get the time where the note starts
-            onset_time = onsets_frame[i]
-
-            # convert the start time to frame
-            start_frame = librosa.time_to_frames(onset_time,sr=sr)
-
-            # the end time of the note
-            if i < len(onsets_frame) - 1:
-                end_time = onsets_frame[i+1]
-            else:
-                end_time = librosa.get_duration(y=y,sr=sr)
-            end_frame = librosa.time_to_frames(end_time,sr=sr)
-
-            f0_segment = f0[start_frame:end_frame]
-            voiced_flag_segment = voiced_flag[start_frame:end_frame]
-
-            # create a new array with only the pitches we are confident about 
-            confident_f0 = f0_segment[voiced_flag_segment]
-
-            duration = librosa.frames_to_time(end_frame,sr=sr) - onset_time
-
-            if len(confident_f0) > 0:
-                # calculate the final representative pitch for the note
-                final_pitch = np.median(confident_f0)
-                final_note = librosa.hz_to_note(final_pitch)
-                detected_notes.append((final_note, float(onset_time), float(duration)))
-            else:
-                detected_notes.append(('rest', float(onset_time), float(duration)))
-            
-    return detected_notes
-
 def note_to_tab(note_events):
 
     mapped_notes = []
     for note_event in reversed(note_events):
-        # print(note_event)
+
         start_time = note_event[0]
         end_time = note_event[1]
         current_note_midi = note_event[2]

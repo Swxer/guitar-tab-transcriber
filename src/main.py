@@ -8,7 +8,6 @@ from basic_pitch.inference import (
     Model,
     ICASSP_2022_MODEL_PATH
 )
-import shlex
 
 if __name__ == '__main__':
     
