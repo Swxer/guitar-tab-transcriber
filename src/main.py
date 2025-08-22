@@ -1,8 +1,4 @@
 from utils import (
-    load_audio_file, 
-    get_pitch, 
-    get_detected_notes, 
-    onset_detect, 
     note_to_tab,
     create_ascii_tabs
 )
@@ -11,7 +7,6 @@ from basic_pitch.inference import (
     Model,
     ICASSP_2022_MODEL_PATH
 )
-import librosa
 import shlex
 
 if __name__ == '__main__':
@@ -36,16 +31,6 @@ if __name__ == '__main__':
 
     basic_pitch_model = Model(ICASSP_2022_MODEL_PATH)
     _,__,note_events = predict(cleaned_path,basic_pitch_model)
-    detected_notes = []
 
-    for note_event in note_events:
-        start_time = note_event[0]
-        end_time = note_event[1]
-        duration = end_time - start_time
-        midi_note = note_event[2]
-        note_name = librosa.midi_to_note(midi_note)
-        detected_notes.append((note_name,start_time,duration))
-
-    print(detected_notes)
-    # mapped_notes = note_to_tab(detected_notes)
-    # create_ascii_tabs(mapped_notes)
+    mapped_notes = note_to_tab(note_events)
+    create_ascii_tabs(mapped_notes)

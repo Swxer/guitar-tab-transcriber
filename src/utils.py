@@ -85,22 +85,26 @@ def get_detected_notes(y,sr,onsets_frame, f0, voiced_flag):
 
     return detected_notes
 
-def note_to_tab(detected_notes):
+    # for note_event in note_events:
+    #     start_time = note_event[0]
+    #     end_time = note_event[1]
+    #     duration = end_time - start_time
+    #     midi_note = note_event[2]
+    #     note_name = librosa.midi_to_note(midi_note)
+    #     detected_notes.append((note_name,start_time,duration))
+
+def note_to_tab(note_events):
 
     mapped_notes = []
-    for note, onset_time, duration in detected_notes:
-        if note == 'rest':
-            mapped_notes.append({
-                "note": "rest",
-                "string": "Unknown",
-                "fret": "Unknown",
-                "onset": onset_time,
-                "duration": duration
-            })
-            continue
-
-        current_note_midi = librosa.note_to_midi(note)
+    for note_event in reversed(note_events):
+        print(note_event)
+        start_time = note_event[0]
+        end_time = note_event[1]
+        current_note_midi = note_event[2]
         found_position = False
+        
+        duration = end_time - start_time
+        note_name = librosa.midi_to_note(current_note_midi) 
 
         # loop through each open string's midi value
         for string_name, open_midi in guitar_string_midi.items():
@@ -109,23 +113,23 @@ def note_to_tab(detected_notes):
             # check if this is a valid fret on the guitar
             if 0 <= fret <= 24: 
                 mapped_notes.append({
-                    "note": note,
+                    "note": note_name,
                     "string": string_name,
                     "fret": fret,
-                    "onset": onset_time,
+                    "start_time": start_time,
                     "duration": duration
                 })
                 found_position = True
                 break # remove this when you want to look at other possible position 
 
-        if not found_position:
-            mapped_notes.append({
-                "note": note,
-                "string": "Unknown",
-                "fret": "Unknown",
-                "onset": onset_time,
-                "duration": duration
-            })
+        # if not found_position:
+        #     mapped_notes.append({
+        #         "note": note,
+        #         "string": "Unknown",
+        #         "fret": "Unknown",
+        #         "onset": onset_time,
+        #         "duration": duration
+        #     })
                 
     return mapped_notes
 
