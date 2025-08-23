@@ -32,14 +32,38 @@ def load_audio_file():
             print(f"\nError: Could not load the file. Please ensure it is a valid audio format (e.g., .wav, .mp3).")
             print(f"Details: {e}\n")
 
-def note_to_tab(note_events):
+def get_octave_shift():
+    while True:
+        try:
+            shift_direction = input('Do you want to shift the melody higher or lower? (higher/lower/none): ').strip().lower()
+            if shift_direction == 'none':
+                return 0
+            
+            num_octaves_str = input(f'How many octaves do you want to shift {shift_direction}? ').strip()
+            num_octaves = int(num_octaves_str)
+
+            if num_octaves <= 0:
+                print("\nPlease enter a positive number of octaves")
+                continue
+
+            if shift_direction == 'higher':
+                return num_octaves * 12
+            elif shift_direction == 'lower':
+                return num_octaves * -12
+            else:
+                print("\nInvalid direction. Please type 'higher', 'lower', or 'none'.")
+
+        except ValueError:
+            print("\nInvalid input. Please enter a whole number.")
+
+def note_to_tab(note_events, octave_shift):
 
     mapped_notes = []
     for note_event in reversed(note_events):
 
         start_time = note_event[0]
         end_time = note_event[1]
-        current_note_midi = note_event[2]
+        current_note_midi = note_event[2] + octave_shift
         found_position = False
         
         duration = end_time - start_time
