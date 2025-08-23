@@ -9,8 +9,7 @@ from basic_pitch.inference import (
     ICASSP_2022_MODEL_PATH
 )
 
-if __name__ == '__main__':
-    
+def main():
     cleaned_path = load_audio_file()
     
     print('Converting...')
@@ -19,3 +18,6 @@ if __name__ == '__main__':
 
     mapped_notes = note_to_tab(note_events)
     create_ascii_tabs(mapped_notes)
+
+if __name__ == '__main__':
+    main()

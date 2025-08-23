@@ -7,6 +7,9 @@ OPEN_STRINGS = ['E4','B3','G3','D3','A2','E2']
 guitar_string_index = {note: i for i, note in enumerate(OPEN_STRINGS)}
 
 def load_audio_file():
+
+    SUPPORTED_EXTENSIONS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a']
+
     while True:
         try:
             file_path = input('Drag and drop your audio file here and press Enter: ').strip()
@@ -15,9 +18,17 @@ def load_audio_file():
             # (file_path)[1] if you drop the file into the terminal and & is added in front of the absolute directory
             # (file_path)[0] <- otherwise do this
             cleaned_path = shlex.split(file_path)[1]
+            final_path = os.path.normpath(cleaned_path) # make file path consistent across different operating systems
+            file_extension = os.path.splitext(final_path)[1].lower()
 
-            return cleaned_path
-        except Exception as e:
+            if file_extension not in SUPPORTED_EXTENSIONS:
+                raise ValueError("Unsupported file format. Please use a supported audio format (e.g., .mp3, .wav).")
+            
+            if not os.path.isfile(final_path):
+                raise FileNotFoundError("The file does not exist. Please check the path and try again.")
+
+            return final_path
+        except (ValueError, FileNotFoundError) as e:
             print(f"\nError: Could not load the file. Please ensure it is a valid audio format (e.g., .wav, .mp3).")
             print(f"Details: {e}\n")
 
