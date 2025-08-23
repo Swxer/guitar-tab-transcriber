@@ -14,9 +14,11 @@ def load_audio_file():
             file_path = input('Drag and drop your audio file here and press Enter: ').strip()
 
             # handles quotes and spaces
-            # (file_path)[1] if you drop the file into the terminal and & is added in front of the absolute directory
-            # (file_path)[0] <- otherwise do this
-            cleaned_path = shlex.split(file_path)[0]
+            parts = shlex.split(file_path)
+            if parts[0] == '&':
+                cleaned_path = parts[1]
+            else:
+                cleaned_path = parts[0]
             final_path = os.path.normpath(cleaned_path) # make file path consistent across different operating systems
             file_extension = os.path.splitext(final_path)[1].lower()
 
