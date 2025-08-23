@@ -1,5 +1,4 @@
 import librosa
-import numpy as np
 import shlex
 import os
 
@@ -17,7 +16,7 @@ def load_audio_file():
             # handles quotes and spaces
             # (file_path)[1] if you drop the file into the terminal and & is added in front of the absolute directory
             # (file_path)[0] <- otherwise do this
-            cleaned_path = shlex.split(file_path)[1]
+            cleaned_path = shlex.split(file_path)[0]
             final_path = os.path.normpath(cleaned_path) # make file path consistent across different operating systems
             file_extension = os.path.splitext(final_path)[1].lower()
 
@@ -64,13 +63,16 @@ def note_to_tab(note_events, octave_shift):
         start_time = note_event[0]
         end_time = note_event[1]
         current_note_midi = note_event[2] + octave_shift
-        found_position = False
         
         duration = end_time - start_time
         MIN_DURATION = 0.2
         if duration < MIN_DURATION:
             continue
-        note_name = librosa.midi_to_note(current_note_midi) 
+
+        note_name = librosa.midi_to_note(current_note_midi)
+
+        # contains all valid fingering options for the current note
+        possible_fingerings = []
 
         # loop through each open string's midi value
         for string in OPEN_STRINGS:
@@ -79,15 +81,18 @@ def note_to_tab(note_events, octave_shift):
             
             # check if this is a valid fret on the guitar
             if 0 <= fret <= 24: 
-                mapped_notes.append({
+                possible_fingerings.append({
                     "note": note_name,
                     "string": string,
                     "fret": fret,
                     "start_time": start_time,
                     "duration": duration
                 })
-                found_position = True
-                break # remove this when you want to look at other possible position 
+
+        if possible_fingerings:
+            best_fingering = min(possible_fingerings,key=lambda x: x['fret'])
+            mapped_notes.append(best_fingering)
+ 
                 
     return mapped_notes
 

@@ -1,46 +1,68 @@
 # Guitar Tab Transcriber
 
 ## Project Goal
-The goal of this project is to create a Python script that can automatically transcribe notes from a monophonic audio file into guitar tablature.
+The goal of this project is to create a Python script that can automatically transcribe notes from an audio file into guitar tablature.
 
 ## Status: Work in Progress
 This project is currently under active development. The core logic for transcribing simple, single-note melodies into guitar tablature has been successfully implemented. I am now working on improving the accuracy of note detection for fast melodies and incorporating note duration to create more complete and realistic tabs.
 
 ## Current Features
-* **Audio Loading**: The script can load and process standard audio files (`.wav`, `.mp3`) using the librosa library.
+* **Audio Loading**: The script can load and process standard audio files (`.wav`, `.mp3`, etc.) using the `librosa` library.
 * **Monophonic Note Transcription**: The script successfully transcribes simple monophonic melodies (one note at a time) from an audio file into a sequence of notes.
-* **Pitch and Onset Detection**: It uses a combination of librosa's pitch and onset detection algorithms to identify individual notes and their starting points.
+* **Pitch and Onset Detection**: It uses a machine learning model from the `basic-pitch` library to identify individual notes and their starting points.
 * **Frequency-to-Tablature Mapping**: The detected notes are automatically converted into a standard musical note name (e.g., "A2") and then mapped to a specific string and fret position on a standard-tuned 6-string guitar.
 * **ASCII Tablature Generation**: The project outputs a formatted .txt file containing a simple, readable guitar tablature of the transcribed melody.
 * **Robust Error Handling**: Includes error handling for invalid audio file formats, providing a more user-friendly experience.
 
+---
+
+## Recommended Workflow
+
+For the best results, it is highly recommended that you first use a third-party program to **isolate the musical component** you want to transcribe. The program works best on a clean audio file that contains only the melody line.
+
+https://splitter.ai/ is a free tool that can separate a song into its individual musical components, allowing you to select the track with the melody you need.
+
+* **Disclaimer**: This program is not 100% accurate. Due to the complexities of audio analysis, the transcriber might pick up very minor sounds, resulting in extra notes in the tablature. Please use the output as a guideline and use your own judgment to determine which notes are necessary and which are not.
+
+---
+
 ## Planned Features
+* **Fret Range Selection**: Allow the user to specify a preferred fret range to produce a more playable tablature.
 * **Duration-Based Tablature**: Enhance the tablature output to include note duration, representing different note lengths (e.g., quarter notes, eighth notes) for more accurate transcriptions.
-* **Improved Fast Melody Detection**: Implement more robust algorithms to handle quick successions of notes, improving the overall accuracy of the transcription.
-* **Multi-Note (Polyphonic) Handling**: Investigate and integrate advanced techniques, such as machine learning models, to accurately transcribe chords and other polyphonic audio.
+* **Polyphonic Handling**: Investigate and integrate advanced techniques to accurately transcribe chords and other polyphonic audio.
+
+---
 
 ## Dependencies
 * `librosa`
-* `numpy`
+* `basic-pitch`
+
+**A note for contributors:** If you plan to contribute to this project, please ensure you are using a compatible Python version. The `basic-pitch` library currently only supports Python versions **3.7, 3.8, 3.9, 3.10, and 3.11**.
+
+---
 
 ## How to use
-This program can be used in two ways: by running a standalone executable (for Windows users) or by running the Python script directly (for all operating systems).
+1. **Git Clone the Repo**:
 
-**Option 1: For Windows Users (Executable)**  
-For a simple, no-setup-required experience, you can download a standalone executable.
-1. **Download the Executable:** Click the link below to download the latest Windows executable.
-[Download Guitar Tab Transcriber.exe](https://drive.google.com/file/d/19gpGk9zqjeZMpnT53HvRgmE8cnatmzu6/view?usp=drive_link)
 
-2. **Run the Application**: Double-click the `.exe` file to launch the application.
+**HTTPS**
+```
+git clone https://github.com/Swxer/guitar-tab-transcriber.git
+```
+**SSH**
+```
+git clone git@github.com:Swxer/guitar-tab-transcriber.git
+```
+**GitHub CLI**
+```
+gh repo clone Swxer/guitar-tab-transcriber
+```
 
-**Option 2: For All Users (Python Script)**  
-If you prefer to run the script directly, or are on a Mac or Linux machine, follow these steps.
-
-1. **Install Dependencies**: First, ensure you have Python 3 installed. Then, install the required libraries using pip:
+2.  **Install Dependencies**: First, ensure you have a compatible version of Python 3 installed. Then, install the required libraries using pip:
 ```
 pip install -r requirements.txt
 ```
-2. **Run the Script**: Navigate to the project's directory in your terminal and execute the main script:
+3. **Run the Script**: Navigate to the project's directory in your terminal and execute the main script:
 ```
 python src/main.py
 ```
