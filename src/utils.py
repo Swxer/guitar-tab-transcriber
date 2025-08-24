@@ -101,17 +101,20 @@ def note_to_tab(note_events, octave_shift):
 def create_ascii_tabs(mapped_notes):
     tab = [['e |'],['B |'],['G |'],['D |'],['A |'],['E |']]
 
+    COLUMN_WIDTH = 4
+
     # loop through the mapped notes and build the tab
     for note in mapped_notes:
-        column = ['--'] * 6
+        column = ['-' * (COLUMN_WIDTH - 1)] * 6
 
-        if note['fret'] != 'Unknown' and note['string'] != 'Unknown':
-            fret = str(note['fret'])
-            string_name = note['string']
+        fret = str(note['fret'])
+        string_name = note['string']
 
-            if string_name in guitar_string_index:
-                string_index = guitar_string_index[string_name]
-                column[string_index] = f'{fret}-' if len(fret) < 2 else fret
+        padded_fret = fret.rjust(COLUMN_WIDTH - 1, '-')
+
+        if string_name in guitar_string_index:
+            string_index = guitar_string_index[string_name]
+            column[string_index] = padded_fret
 
         # append the entire column to the tab
         for i in range(len(tab)):
@@ -125,6 +128,6 @@ def create_ascii_tabs(mapped_notes):
     # output txt file 
     with open('output.txt','w') as f:
         for string in tab:
-            f.write('-'.join(string) + '\n')
+            f.write(''.join(string) + '\n')
 
     print('Done!')
