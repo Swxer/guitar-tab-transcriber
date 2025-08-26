@@ -18,8 +18,8 @@ def main():
     basic_pitch_model = Model(ICASSP_2022_MODEL_PATH)
     _,__,note_events = predict(cleaned_path, basic_pitch_model)
 
-    mapped_notes = note_to_tab(note_events, octave_shift)
-    create_ascii_tabs(mapped_notes)
+    mapped_notes, song_length = note_to_tab(note_events, octave_shift)
+    create_ascii_tabs(mapped_notes, song_length)
 
 if __name__ == '__main__':
     main()

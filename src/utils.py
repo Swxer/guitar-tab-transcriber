@@ -60,6 +60,7 @@ def get_octave_shift():
 def note_to_tab(note_events, octave_shift):
 
     mapped_notes = []
+    song_length = 0
     for note_event in reversed(note_events):
 
         start_time = note_event[0]
@@ -67,9 +68,12 @@ def note_to_tab(note_events, octave_shift):
         current_note_midi = note_event[2] + octave_shift
         
         duration = end_time - start_time
+
         MIN_DURATION = 0.2
         if duration < MIN_DURATION:
             continue
+
+        song_length = max(song_length, start_time + duration)
 
         note_name = librosa.midi_to_note(current_note_midi)
 
@@ -95,39 +99,41 @@ def note_to_tab(note_events, octave_shift):
             best_fingering = min(possible_fingerings,key=lambda x: x['fret'])
             mapped_notes.append(best_fingering)
  
-                
-    return mapped_notes
+    return mapped_notes, song_length
 
-def create_ascii_tabs(mapped_notes):
-    tab = [['e |'],['B |'],['G |'],['D |'],['A |'],['E |']]
+def create_ascii_tabs(mapped_notes, song_length):
+    column_width = 2
+    note_value = 0.125
+    total_columns = round(song_length / note_value)
 
-    COLUMN_WIDTH = 4
-
+    tab = [['-' for _ in range(total_columns * column_width)] for _ in range(6)]
+    
     # loop through the mapped notes and build the tab
     for note in mapped_notes:
-        column = ['-' * (COLUMN_WIDTH - 1)] * 6
-
         fret = str(note['fret'])
         string_name = note['string']
 
-        padded_fret = fret.rjust(COLUMN_WIDTH - 1, '-')
+        padded_fret = fret.rjust(column_width, '-')
+        string_index = guitar_string_index[string_name]
+        fret_position = round(note['start_time'] / note_value)
 
-        if string_name in guitar_string_index:
-            string_index = guitar_string_index[string_name]
-            column[string_index] = padded_fret
+        start_pos = fret_position * column_width
 
-        # append the entire column to the tab
-        for i in range(len(tab)):
-            tab[i].append(column[i])
+        for i, char in enumerate(padded_fret):
+            tab[string_index][start_pos] = char
 
-    # indicate the end of the tab
-    end = ['|'] * 6
+        # tab[string_index][fret_position] = padded_fret
+
+    header = ['e |','B |','G |','D |','A |','E |']
+    final_tab = []
+
     for i in range(len(tab)):
-        tab[i].append(end[i])
+        row = header[i] + ''.join(tab[i]) + '|'
+        final_tab.append(row)
 
     # output txt file 
     with open('output.txt','w') as f:
-        for string in tab:
+        for string in final_tab:
             f.write(''.join(string) + '\n')
 
     print('Done!')
