@@ -69,4 +69,5 @@ python src/main.py
 
 **Audio Input**  
 
-To use the program, run the main script and wait until it prompts you to drag and drop your audio file into the terminal. After the file path is displayed, press Enter. The program will then ask if you want to adjust the octaves before generating the transcribed guitar tablature, which will be saved to a file named `output.tx`t in the same directory.
+To use the program, run the main script and wait until it prompts you to drag and drop your audio file into the terminal. After the file path is displayed, press Enter. The program will then ask if you want to adjust the octaves before generating the transcribed guitar tablature, which will be saved to a file named `output.txt` in the same directory.
+
