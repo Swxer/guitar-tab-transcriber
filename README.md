@@ -7,7 +7,7 @@ The goal of this project is to create a Python script that can automatically tra
 This project is currently under active development. The core logic for transcribing simple, single-note melodies into guitar tablature has been successfully implemented. I am now working on improving the accuracy of note detection for fast melodies and incorporating note duration to create more complete and realistic tabs.
 
 ## Current Features
-* **Audio Loading**: The script can load and process standard audio files (`.wav`, `.mp3`, etc.) using the `librosa` library.
+* **Audio Loading**: The script can process standard audio files (`.wav`, `.mp3`, etc.) and automatically extract relevant musical data for transcription.
 * **Monophonic Note Transcription**: The script successfully transcribes simple monophonic melodies (one note at a time) from an audio file into a sequence of notes.
 * **Pitch and Onset Detection**: It uses a machine learning model from the `basic-pitch` library to identify individual notes and their starting points.
 * **Frequency-to-Tablature Mapping**: The detected notes are automatically converted into a standard musical note name (e.g., "A2") and then mapped to a specific string and fret position on a standard-tuned 6-string guitar.
@@ -68,4 +68,5 @@ python src/main.py
 ```
 
 **Audio Input**  
-In both cases, the program will prompt you to drag and drop your audio file into the terminal window. After the file path is displayed, press Enter. The transcribed guitar tablature will be saved to a file named `output.txt` in the same directory.
+
+To use the program, run the main script and wait until it prompts you to drag and drop your audio file into the terminal. After the file path is displayed, press Enter. The program will then ask if you want to adjust the octaves before generating the transcribed guitar tablature, which will be saved to a file named `output.tx`t in the same directory.
