@@ -1,9 +1,13 @@
 import librosa
 import shlex
 import os
+import statistics
 
 OPEN_STRINGS = ['E4','B3','G3','D3','A2','E2']
 guitar_string_index = {note: i for i, note in enumerate(OPEN_STRINGS)}
+
+MIN_AMPLITUDE = 0.05
+MAX_COLUMNS = 80
 
 def load_audio_file():
 
@@ -59,31 +63,33 @@ def get_octave_shift():
 
 def note_to_tab(note_events, octave_shift):
 
-    mapped_notes_by_time = {}
-    song_length = 0
-    for note_event in reversed(note_events):
+    MIN_DURATION = 0.2
+    all_notes = []
+
+    for note_event in note_events:
+
+        if len(note_event) >= 4 and note_event[3] < MIN_AMPLITUDE:
+            continue
 
         start_time = note_event[0]
         end_time = note_event[1]
         current_note_midi = note_event[2] + octave_shift
         duration = end_time - start_time
 
-        MIN_DURATION = 0.2
         if duration < MIN_DURATION:
             continue
 
-        song_length = max(song_length, start_time + duration)
+        if current_note_midi < 40 or current_note_midi > 100:
+            continue
+
         note_name = librosa.midi_to_note(current_note_midi)
 
-        # contains all valid fingering options for the current note
         possible_fingerings = []
 
-        # loop through each open string's midi value
         for string in OPEN_STRINGS:
             open_midi = librosa.note_to_midi(string)
             fret = current_note_midi - open_midi
             
-            # check if this is a valid fret on the guitar
             if 0 <= fret <= 24: 
                 possible_fingerings.append({
                     "note": note_name,
@@ -94,20 +100,32 @@ def note_to_tab(note_events, octave_shift):
                 })
 
         if possible_fingerings:
-            best_fingering = min(possible_fingerings,key=lambda x: x['fret'])
+            all_notes.append(possible_fingerings)
 
-            time_key = round(start_time, 2)
+    if not all_notes:
+        return {}, 0
 
-            if time_key not in mapped_notes_by_time:
-                mapped_notes_by_time[time_key] = []
+    all_frets = [f['fret'] for note in all_notes for f in note]
+    median_fret = statistics.median(all_frets)
 
-            best_fingering['duration'] = duration
-            best_fingering['start_time'] = start_time
+    mapped_notes_by_time = {}
+    song_length = 0
 
+    for possible_fingerings in all_notes:
+        best_fingering = min(possible_fingerings, key=lambda x: abs(x['fret'] - median_fret))
 
-            mapped_notes_by_time[time_key].append(best_fingering)
- 
-    return  mapped_notes_by_time, song_length
+        start_time = best_fingering['start_time']
+        duration = best_fingering['duration']
+        song_length = max(song_length, start_time + duration)
+
+        time_key = round(start_time, 2)
+
+        if time_key not in mapped_notes_by_time:
+            mapped_notes_by_time[time_key] = []
+
+        mapped_notes_by_time[time_key].append(best_fingering)
+  
+    return mapped_notes_by_time, song_length
 
 def create_ascii_tabs(mapped_notes, song_length):
     column_width = 2
@@ -120,11 +138,7 @@ def create_ascii_tabs(mapped_notes, song_length):
 
     for time_key in sorted_times:
         chord_notes = mapped_notes[time_key]
-        fret_position = round(time_key / note_value)
 
-
-    
-        # loop through the mapped notes and build the tab
         for note in chord_notes:
             fret = str(note['fret'])
             string_name = note['string']
@@ -138,18 +152,15 @@ def create_ascii_tabs(mapped_notes, song_length):
             for i, char in enumerate(padded_fret):
                 tab[string_index][start_pos] = char
 
-        # tab[string_index][fret_position] = padded_fret
-
     header = ['e |','B |','G |','D |','A |','E |']
-    final_tab = []
+    row_length = len(tab[0])
 
-    for i in range(len(tab)):
-        row = header[i] + ''.join(tab[i]) + '|'
-        final_tab.append(row)
-
-    # output txt file 
     with open('output.txt','w') as f:
-        for string in final_tab:
-            f.write(''.join(string) + '\n')
+        for chunk_start in range(0, row_length, MAX_COLUMNS):
+            chunk_end = min(chunk_start + MAX_COLUMNS, row_length)
+            for i in range(6):
+                row_chunk = ''.join(tab[i][chunk_start:chunk_end])
+                f.write(header[i] + row_chunk + '|\n')
+            f.write('\n')
 
     print('Done!')
