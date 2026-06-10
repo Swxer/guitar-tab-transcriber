@@ -1,9 +1,7 @@
-from utils import (
-    note_to_tab,
-    create_ascii_tabs,
-    load_audio_file,
-    get_octave_shift
-)
+from audio import load_audio_file, get_octave_shift
+from transcription import note_to_tab
+from tab_writer import create_ascii_tabs
+
 from basic_pitch.inference import (
     predict,
     Model,

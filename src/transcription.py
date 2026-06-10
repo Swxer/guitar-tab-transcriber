@@ -1,4 +1,5 @@
 import librosa
+import statistics
 from config import OPEN_STRINGS, MIN_AMPLITUDE
 
 def note_to_tab(note_events, octave_shift):
