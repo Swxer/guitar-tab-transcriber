@@ -1,10 +1,9 @@
 import librosa
 import statistics
-from config import OPEN_STRINGS, MIN_AMPLITUDE
+from config import MAX_MIDI_PITCH, MIN_MIDI_PITCH, OPEN_STRINGS, MIN_AMPLITUDE, MIN_DURATION
 
 def note_to_tab(note_events, octave_shift):
 
-    MIN_DURATION = 0.2
     all_notes = []
 
     for note_event in note_events:
@@ -20,7 +19,7 @@ def note_to_tab(note_events, octave_shift):
         if duration < MIN_DURATION:
             continue
 
-        if current_note_midi < 40 or current_note_midi > 100:
+        if current_note_midi < MIN_MIDI_PITCH or current_note_midi > MAX_MIDI_PITCH:
             continue
 
         note_name = librosa.midi_to_note(current_note_midi)
