@@ -1,7 +1,6 @@
 import shlex
 import os
-
-SUPPORTED_EXTENSIONS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a']
+from config import SUPPORTED_EXTENSIONS
 
 def parse_file_path(raw_input):
     parts = shlex.split(raw_input)

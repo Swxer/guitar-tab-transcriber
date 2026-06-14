@@ -1,8 +1,4 @@
-from config import guitar_string_index, MAX_COLUMNS
-
-COLUMN_WIDTH = 2
-NOTE_VALUE = 0.125
-STRING_HEADERS = ['e |', 'B |', 'G |', 'D |', 'A |', 'E |']
+from config import guitar_string_index, MAX_COLUMNS, COLUMN_WIDTH, NOTE_VALUE, STRING_HEADERS
 
 def build_tab_grid(song_length):
     total_columns = round(song_length / NOTE_VALUE)

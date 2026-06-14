@@ -1,11 +1,13 @@
 import librosa
 import statistics
-from config import OPEN_STRINGS, MIN_AMPLITUDE
-
-MIN_DURATION = 0.2
-MIN_MIDI = 40
-MAX_MIDI = 100
-MAX_FRET = 24
+from config import (
+    OPEN_STRINGS,
+    MIN_AMPLITUDE,
+    MIN_DURATION,
+    MIN_MIDI,
+    MAX_MIDI,
+    MAX_FRET
+)
 
 def is_valid_note(note_event, octave_shift):
     if len(note_event) >= 4 and note_event[3] < MIN_AMPLITUDE:
