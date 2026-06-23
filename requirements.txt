@@ -1,5 +1,0 @@
-librosa
-basic-pitch
-fastapi
-uvicorn
-python-multipart
