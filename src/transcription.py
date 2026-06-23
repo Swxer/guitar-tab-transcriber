@@ -9,6 +9,23 @@ from config import (
     MAX_FRET
 )
 
+def filter_harmonics(note_events, time_window=0.05):
+    filtered = []
+    for i, note in enumerate(note_events):
+        is_harmonic = False
+        for j, other in enumerate(note_events):
+            if i == j:
+                continue
+            if abs(note[0] - other[0]) > time_window:
+                continue
+            interval = abs(int(note[2]) - int(other[2]))
+            if interval in (12, 19, 24, 7) and other[3] > note[3] * 1.5:
+                is_harmonic = True
+                break
+        if not is_harmonic:
+            filtered.append(note)
+    return filtered
+
 def is_valid_note(note_event, octave_shift):
     if len(note_event) >= 4 and note_event[3] < MIN_AMPLITUDE:
         return False, None, None, None

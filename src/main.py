@@ -1,5 +1,5 @@
 from audio import load_audio_file, get_octave_shift
-from transcription import note_to_tab
+from transcription import note_to_tab, filter_harmonics
 from tab_writer import create_ascii_tabs
 
 from basic_pitch.inference import (
@@ -16,6 +16,7 @@ def main():
     basic_pitch_model = Model(ICASSP_2022_MODEL_PATH)
     _,__,note_events = predict(cleaned_path, basic_pitch_model)
 
+    note_events = filter_harmonics(note_events)
     mapped_notes, song_length = note_to_tab(note_events, octave_shift)
     create_ascii_tabs(mapped_notes, song_length)
 
