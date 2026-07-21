@@ -26,7 +26,7 @@ def place_single_note(tab, note):
     start_position = fret_position * COLUMN_WIDTH
 
     for i, char in enumerate(padded_fret):
-        tab[string_index][start_position] = char
+        tab[string_index][start_position + i] = char
 
 def write_tab_chunks(tab, output_path):
     row_length = len(tab[0])
