@@ -1,7 +1,7 @@
 from config import (
-    guitar_string_index, 
-    MAX_COLUMNS, COLUMN_WIDTH, 
-    NOTE_VALUE, 
+    guitar_string_index,
+    MAX_COLUMNS, COLUMN_WIDTH,
+    NOTE_VALUE,
     STRING_HEADERS
 )
 
@@ -12,7 +12,6 @@ def build_tab_grid(song_length):
 def place_notes_on_grid(tab, mapped_notes):
     for time_key in sorted(mapped_notes.keys()):
         chord_notes = mapped_notes[time_key]
-
         for note in chord_notes:
             place_single_note(tab, note)
 
@@ -30,7 +29,6 @@ def place_single_note(tab, note):
 
 def write_tab_chunks(tab, output_path):
     row_length = len(tab[0])
-
     with open(output_path, 'w') as output_file:
         for chunk_start in range(0, row_length, MAX_COLUMNS):
             chunk_end = min(chunk_start + MAX_COLUMNS, row_length)
@@ -42,9 +40,29 @@ def write_tab_block(output_file, tab, chunk_end, chunk_start):
         output_file.write(STRING_HEADERS[string_index] + row_chunk + '|\n')
     output_file.write('\n')
 
-def create_ascii_tabs(mapped_notes, song_length):
+def create_ascii_tabs(mapped_notes, song_length, output_path='output.txt'):
     tab = build_tab_grid(song_length)
     place_notes_on_grid(tab, mapped_notes)
-    write_tab_chunks(tab, 'output.txt')
-
+    write_tab_chunks(tab, output_path)
     print('Done!')
+
+def build_tab_for_api(mapped_notes, song_length):
+    """
+    Returns a list of chunks, where each chunk is a list of 6 strings
+    (one per guitar string).
+    """
+    tab = build_tab_grid(song_length)
+    place_notes_on_grid(tab, mapped_notes)
+
+    row_length = len(tab[0])
+    chunks = []
+
+    for chunk_start in range(0, row_length, MAX_COLUMNS):
+        chunk_end = min(chunk_start + MAX_COLUMNS, row_length)
+        chunk_lines = []
+        for string_index in range(6):
+            row_chunk = ''.join(tab[string_index][chunk_start:chunk_end])
+            chunk_lines.append(STRING_HEADERS[string_index] + row_chunk + '|')
+        chunks.append(chunk_lines)
+
+    return chunks
