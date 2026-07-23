@@ -4,7 +4,7 @@ type Props = {
 
 function TabDisplay({ tab }: Props) {
  return (
-    <div className="w-full max-w-4xl mt-12 flex flex-col gap-6">
+    <div className="w-full max-w-3xl mt-12 flex flex-col gap-6">
       <h2 className="text-xl font-semibold text-white">Your Tab</h2>
       {tab
         .filter(chunk => chunk.some(line => /\d/.test(line))) // only keep chunks with at least one number
