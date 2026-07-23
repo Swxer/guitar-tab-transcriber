@@ -47,12 +47,13 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
           const data = await response.json()
           if (data.status === "done") {
             clearInterval(interval)
-            setStatus("done")
+            setJobId(jobId)
             setTab(data.tab)
+            setStatus("done")
           } else if (data.status === "error") {
             clearInterval(interval)
-            setStatus("error")
             setErrorMessage(data.message && 'Something went wrong')
+            setStatus("error")
           }
         } catch (error) {
           clearInterval(interval)
@@ -114,7 +115,6 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
           }
         `}
       >
-        {/* Hidden real file input — triggered by clicking the drop zone */}
         <input
           ref={fileInputRef}
           type="file"
@@ -149,7 +149,6 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
         </div>
       </div>
 
-      {/* Submit button */}
       <button
         onClick={handleSubmit}
         disabled={!file || isProcessing}
