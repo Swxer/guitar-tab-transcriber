@@ -2,7 +2,7 @@ function Hero() {
   return (
     <>
       <h1 className="text-4xl font-bold mb-2">Guitar Tab Transcriber</h1>
-      <p className="text-gray-400 mb-12">Upload an audio file and get the transcribed tab in instantly.</p>
+      <p className="text-gray-400 mb-12">Upload an audio file and get the transcribed tab instantly.</p>
 
 
       <div className="w-full max-w-lg bg-gray-900 border border-gray-700 rounded-xl p-4 mb-8 text-sm text-gray-400">
