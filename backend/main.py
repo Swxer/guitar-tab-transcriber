@@ -1,7 +1,10 @@
+from importlib.resources import contents
 import os
 import uuid
 import shutil
 from contextlib import asynccontextmanager
+import traceback
+
 
 from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -60,7 +63,7 @@ def run_pipeline(job_id: str, file_path: str, octave_shift: int):
         }
 
     except Exception as e:
-        jobs[job_id] = {"status": "error", "message": str(e)}
+        jobs[job_id] = {"status": "error", "message": traceback.format_exc()}
 
     finally:
         if os.path.exists(file_path):
@@ -84,7 +87,7 @@ async def transcribe(
     temp_path = os.path.join(TEMP_DIR, f"{job_id}{ext}")
 
     with open(temp_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+      buffer.write(contents)
 
     jobs[job_id] = {"status": "processing"}
 
