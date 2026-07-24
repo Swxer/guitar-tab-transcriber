@@ -37,7 +37,7 @@ function App() {
       {status === "done" && (
         <>
           <TabDisplay tab={tab} />
-          <DownloadButton jobId={jobId} />
+          <DownloadButton jobId={jobId} tab={tab} />
         </>
       )}
 

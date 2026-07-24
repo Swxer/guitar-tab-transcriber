@@ -1,11 +1,25 @@
 type Props = {
   jobId: string | null
+  tab: string[][]
 }
 
-function DownloadButton({ jobId }: Props) {
+function DownloadButton({ jobId, tab }: Props) {
   function handleDownload() {
-    if (!jobId) return
-    window.open(`http://localhost:8000/download/${jobId}`, '_blank')
+    if (!tab || tab.length === 0) return
+
+    // Convert tab chunks into plain text
+    const content = tab
+      .map(chunk => chunk.join('\n'))
+      .join('\n\n')
+
+    // Create a blob and trigger download
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'tab.txt'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
