@@ -1,5 +1,6 @@
 venv/
 __pycache__/
-backend/temp/
+backend/temp/*
+!backend/temp/.gitkeep
 output.txt
 data/
