@@ -11,7 +11,7 @@ function TabDisplay({ tab }: Props) {
         .map((chunk, i) => (
           <div key={i} className="overflow-x-auto bg-gray-900 rounded-xl p-6">
             {chunk.map((line, j) => (
-              <pre key={j} className="text-green-400 text-sm font-mono leading-6">
+              <pre key={j} className="text-gray-100 text-sm font-mono leading-6">
                 {line}
               </pre>
             ))}

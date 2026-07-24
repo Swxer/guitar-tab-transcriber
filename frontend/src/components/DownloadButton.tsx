@@ -9,6 +9,7 @@ function DownloadButton({ jobId, tab }: Props) {
 
     // Convert tab chunks into plain text
     const content = tab
+      .filter(chunk => chunk.some(line => /\d/.test(line)))
       .map(chunk => chunk.join('\n'))
       .join('\n\n')
 
