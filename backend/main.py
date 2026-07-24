@@ -7,7 +7,7 @@ from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from config import SUPPORTED_EXTENSIONS
+from config import SUPPORTED_EXTENSIONS, MAX_FILE_SIZE
 from transcription import note_to_tab, filter_harmonics
 from tab_writer import create_ascii_tabs, build_tab_for_api
 
@@ -72,6 +72,10 @@ async def transcribe(
     file: UploadFile = File(...),
     octave_shift: int = Form(0)
 ):
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        return {"error": "File too large. Please upload a file under 10MB."}
+    
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in SUPPORTED_EXTENSIONS:
         return {"error": f"Unsupported file format: {ext}"}

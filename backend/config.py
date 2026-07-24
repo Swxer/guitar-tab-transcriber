@@ -17,3 +17,5 @@ STRING_HEADERS = ['e |', 'B |', 'G |', 'D |', 'A |', 'E |']
 
 # Audio input
 SUPPORTED_EXTENSIONS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a']
+
+MAX_FILE_SIZE = 10 * 1024 * 1024
