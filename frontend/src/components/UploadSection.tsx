@@ -35,7 +35,7 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
     setIsDragging(true)
   }
 
-  function handleDragLeave(e: React.DragEvent<HTMLDivElement>) {
+  function handleDragLeave() {
     setIsDragging(false)
   }
 

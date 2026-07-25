@@ -3,7 +3,7 @@ type Props = {
   tab: string[][]
 }
 
-function DownloadButton({ jobId, tab }: Props) {
+function DownloadButton({ tab }: Props) {
   function handleDownload() {
     if (!tab || tab.length === 0) return
 
