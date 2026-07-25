@@ -50,7 +50,7 @@ For the cleanest results:
 | Backend | Python, FastAPI, uvicorn |
 | ML / Audio | Basic Pitch (Spotify), librosa |
 | Frontend Hosting | Netlify |
-| Backend Hosting | Render |
+| Backend Hosting | GCP Cloud Run |
 
 ---
 
@@ -79,7 +79,9 @@ guitar-tab-transcriber/
 │   ├── config.py                     # Guitar tuning, thresholds, display constants
 │   ├── audio.py                      # Audio validation helpers
 │   ├── temp/                         # Temporary uploaded audio files (auto-cleaned)
-│   ├── Procfile                      # Render start command
+│   ├── Dockerfile                    # GCP Cloud Run container config
+│   ├── .gcloudignore                 # Excludes venv and cache from GCP builds
+│   ├── Procfile                      # Render start command (legacy)
 │   ├── runtime.txt                   # Python version pin
 │   └── requirements.txt
 │
