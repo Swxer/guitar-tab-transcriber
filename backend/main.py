@@ -4,6 +4,7 @@ import uuid
 import shutil
 from contextlib import asynccontextmanager
 import traceback
+import threading
 
 
 from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
@@ -51,16 +52,13 @@ def run_pipeline(job_id: str, file_path: str, octave_shift: int):
             jobs[job_id] = {"status": "error", "message": "No notes detected. Try a cleaner audio file or adjust the octave shift."}
             return
 
-        output_path = os.path.join(TEMP_DIR, f"{job_id}.txt")
-        create_ascii_tabs(mapped_notes, song_length, output_path)
-
         tab_lines = build_tab_for_api(mapped_notes, song_length)
 
         jobs[job_id] = {
             "status": "done",
-            "tab": tab_lines,
-            "output_path": output_path
+            "tab": tab_lines
         }
+        cleanup_job(job_id)
 
     except Exception as e:
         jobs[job_id] = {"status": "error", "message": traceback.format_exc()}
@@ -68,6 +66,14 @@ def run_pipeline(job_id: str, file_path: str, octave_shift: int):
     finally:
         if os.path.exists(file_path):
             os.remove(file_path)
+
+def cleanup_job(job_id: str, delay: int = 300):
+    """Delete job from memory after 5 minutes."""
+    def _cleanup():
+        jobs.pop(job_id, None)
+    timer = threading.Timer(delay, _cleanup)
+    timer.daemon = True
+    timer.start()
 
 @app.post("/transcribe")
 async def transcribe(
@@ -107,20 +113,3 @@ def get_status(job_id: str):
         "tab": job.get("tab"),
         "message": job.get("message")
     }
-
-
-@app.get("/download/{job_id}")
-def download_tab(job_id: str):
-    job = jobs.get(job_id)
-    if not job or job["status"] != "done":
-        return {"error": "Tab not ready or job not found"}
-
-    output_path = job.get("output_path")
-    if not output_path or not os.path.exists(output_path):
-        return {"error": "Output file not found"}
-
-    return FileResponse(
-        path=output_path,
-        filename="tab.txt",
-        media_type="text/plain"
-    )
