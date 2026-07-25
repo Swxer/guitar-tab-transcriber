@@ -8,7 +8,7 @@ type Props = {
   setErrorMessage: (message: string | null) => void
 }
 
-const BACKEND_URL = "http://localhost:8000"
+const BACKEND_URL = "https://guitar-tab-transcriber.onrender.com"
 const POLLING_INTERVAL = 2000
 
 function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }: Props) {
