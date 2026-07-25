@@ -4,6 +4,7 @@ import TabDisplay from './components/TabDisplay'
 import DownloadButton from './components/DownloadButton'
 import Footer from './components/Footer'
 import Hero from "./components/Hero"
+import LoadingAnimation from "./components/LoadingAnimation"
 
 type Status = "idle" | "processing" | "done" | "error"
 
@@ -27,7 +28,9 @@ function App() {
       />
 
       {status === "processing" && (
-        <p className="mt-8 text-gray-400 animate-pulse">Processing...</p>
+        <>
+          <LoadingAnimation />
+        </>
       )}
 
       {status === 'error' && (
