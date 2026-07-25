@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 
 type Props = {
   status: 'idle' | 'processing' | 'done' | 'error'
@@ -17,6 +17,13 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
   const [octaveShift, setOctaveShift] = useState<number>(0)
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const ping = () => fetch(`${BACKEND_URL}/health`)
+    ping()
+    const interval = setInterval(ping, 10 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files?.[0])  
@@ -67,31 +74,40 @@ function UploadSection({ status, setStatus, setJobId, setTab, setErrorMessage }:
     if (!file) return
 
     const formData = new FormData()
-    formData.append("file", file)
-    formData.append("octave_shift", octaveShift.toString())
+    formData.append('file', file)
+    formData.append('octave_shift', octaveShift.toString())
 
-    setStatus("processing")
+    setStatus('processing')
 
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 60000)
+
       const res = await fetch(`${BACKEND_URL}/transcribe`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       })
-
+      clearTimeout(timeout)
+      
       const data = await res.json()
 
       if (data.error) {
         setErrorMessage(data.error)
-        setStatus("error")
+        setStatus('error')
         return
       }
 
       pollStatus(data.job_id)
-    } catch {
-      setErrorMessage('Could not reach the server. Is the backend running?')
-      setStatus("error")
-    }
 
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setErrorMessage('Request timed out. The server may be waking up, please try again.')
+      } else {
+        setErrorMessage('Could not reach the server.')
+      }
+      setStatus('error')
+    }
   }
 
   const isProcessing = status === "processing"

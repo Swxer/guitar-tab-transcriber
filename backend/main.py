@@ -113,3 +113,7 @@ def get_status(job_id: str):
         "tab": job.get("tab"),
         "message": job.get("message")
     }
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
