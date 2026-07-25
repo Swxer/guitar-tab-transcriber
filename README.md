@@ -1,73 +1,135 @@
 # Guitar Tab Transcriber
 
-## Project Goal
-The goal of this project is to create a Python script that can automatically transcribe notes from an audio file into guitar tablature.
+A full-stack web application that transcribes audio files into guitar tablature using deep learning.
 
-## Status: Work in Progress
-This project is currently under active development. The core logic for transcribing simple, single-note melodies into guitar tablature has been successfully implemented. I am now working on improving the accuracy of note detection for fast melodies and incorporating note duration to create more complete and realistic tabs.
+🎸 **[Try it live →](https://guitar-tab-transcriber.netlify.app/)**
 
-## Current Features
-* **Audio Loading**: The script can process standard audio files (`.wav`, `.mp3`, etc.) and automatically extract relevant musical data for transcription.
-* **Monophonic Note Transcription**: The script successfully transcribes simple monophonic melodies (one note at a time) from an audio file into a sequence of notes.
-* **Pitch and Onset Detection**: It uses a machine learning model from the `basic-pitch` library to identify individual notes and their starting points.
-* **Frequency-to-Tablature Mapping**: The detected notes are automatically converted into a standard musical note name (e.g., "A2") and then mapped to a specific string and fret position on a standard-tuned 6-string guitar.
-* **ASCII Tablature Generation**: The project outputs a formatted .txt file containing a simple, readable guitar tablature of the transcribed melody.
-* **Robust Error Handling**: Includes error handling for invalid audio file formats, providing a more user-friendly experience.
+---
+
+## About
+
+Guitar Tab Transcriber analyses an uploaded audio file and converts the detected melody into ASCII guitar tablature. It uses [Basic Pitch](https://basicpitch.spotify.com/) by Spotify for pitch and onset detection, maps each note to the most playable fret position across all six strings, and renders the result directly in the browser.
+
+The transcriber works best on clean, isolated melody tracks. For best results, use [splitter.ai](https://splitter.ai/) to separate your audio into individual components before uploading.
+
+> **Disclaimer:** The transcriber is not 100% accurate. Due to the complexity of audio analysis, it may occasionally detect extra notes or artifacts. Use the output as a guide and apply your own musical judgement.
+
+---
+
+## Features
+
+- **Audio upload** - drag and drop or click to browse. Supports `.mp3`, `.wav`, `.flac`, `.ogg`, `.m4a`
+- **Octave shift** - slider control to shift the detected melody up or down by up to 2 octaves
+- **Deep learning transcription** - uses Basic Pitch (Spotify) for pitch and onset detection
+- **Harmonic filtering** - custom algorithm suppresses overtones and phantom notes
+- **Position-aware fingering** - maps notes to the most playable fret positions across all six strings
+- **In-browser tab rendering** - ASCII tablature rendered directly in the browser with monospace formatting
+- **Download as .txt** - export the tab as a plain text file
+- **Async processing** - long-running transcription jobs run in the background with live polling
 
 ---
 
 ## Recommended Workflow
 
-For the best results, it is highly recommended that you first use a third-party program to **isolate the musical component** you want to transcribe. The program works best on a clean audio file that contains only the melody line.
+For the cleanest results:
 
-https://splitter.ai/ is a free tool that can separate a song into its individual musical components, allowing you to select the track with the melody you need.
-
-* **Disclaimer**: This program is not 100% accurate. Due to the complexities of audio analysis, the transcriber might pick up very minor sounds, resulting in extra notes in the tablature. Please use the output as a guideline and use your own judgment to determine which notes are necessary and which are not.
+1. Find or record the audio you want to transcribe
+2. Go to [splitter.ai](https://splitter.ai/) and upload your track
+3. Download the isolated melody/lead component
+4. Upload that file to Guitar Tab Transcriber
+5. Adjust the octave shift if notes seem too high or too low
+6. Download or copy the generated tab
 
 ---
 
-## Planned Features
-* **Fret Range Selection**: Allow the user to specify a preferred fret range to produce a more playable tablature.
-* **Duration-Based Tablature**: Enhance the tablature output to include note duration, representing different note lengths (e.g., quarter notes, eighth notes) for more accurate transcriptions.
-* **Polyphonic Handling**: Investigate and integrate advanced techniques to accurately transcribe chords and other polyphonic audio.
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, TypeScript, Tailwind CSS, Vite |
+| Backend | Python, FastAPI, uvicorn |
+| ML / Audio | Basic Pitch (Spotify), librosa |
+| Frontend Hosting | Netlify |
+| Backend Hosting | Render |
+
+---
+
+## Project Structure
+
+```
+guitar-tab-transcriber/
+├── frontend/                         # React + TypeScript frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Hero.tsx              # Title, subtitle, tip banner
+│   │   │   ├── UploadSection.tsx     # File upload, octave controls, polling
+│   │   │   ├── TabDisplay.tsx        # ASCII tab renderer
+│   │   │   ├── DownloadButton.tsx    # Client-side .txt download
+│   │   │   ├── LoadingAnimation.tsx  # Note → fret animation
+│   │   │   └── Footer.tsx            # Footer with GitHub link
+│   │   ├── App.tsx                   # Root component, state management
+│   │   └── main.tsx
+│   ├── index.html
+│   └── vite.config.ts
+│
+├── backend/                          # Python FastAPI backend
+│   ├── main.py                       # FastAPI entry point, routes, job management
+│   ├── transcription.py              # Note detection, harmonic filtering, fingering logic
+│   ├── tab_writer.py                 # ASCII tab grid builder
+│   ├── config.py                     # Guitar tuning, thresholds, display constants
+│   ├── audio.py                      # Audio validation helpers
+│   ├── temp/                         # Temporary uploaded audio files (auto-cleaned)
+│   ├── Procfile                      # Render start command
+│   ├── runtime.txt                   # Python version pin
+│   └── requirements.txt
+│
+└── README.md
+```
+
+---
+
+## Running Locally
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate       # Windows
+# source venv/bin/activate  # Mac/Linux
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+Backend runs at `http://localhost:8000`
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs at `http://localhost:5173`
+
+> Make sure `BACKEND_URL` in `UploadSection.tsx` points to `http://localhost:8000` when running locally.
+
+---
+
+## Python Version
+
+This project requires **Python 3.11**. The `basic-pitch` library has limited Python version support - refer to their [documentation](https://github.com/spotify/basic-pitch) for the latest compatibility info.
 
 ---
 
 ## Dependencies
-* `librosa`
-* `basic-pitch`
 
-**A note for contributors:** If you plan to contribute to this project, please ensure you are using a compatible Python version. The `basic-pitch` library currently only supports Python versions **3.7, 3.8, 3.9, 3.10, and 3.11**.
-
----
-
-## How to use
-1. **Git Clone the Repo**:
-
-
-**HTTPS**
 ```
-git clone https://github.com/Swxer/guitar-tab-transcriber.git
+librosa
+basic-pitch
+fastapi
+uvicorn
+python-multipart
+setuptools
 ```
-**SSH**
-```
-git clone git@github.com:Swxer/guitar-tab-transcriber.git
-```
-**GitHub CLI**
-```
-gh repo clone Swxer/guitar-tab-transcriber
-```
-
-2.  **Install Dependencies**: First, ensure you have a compatible version of Python 3 installed. Then, install the required libraries using pip:
-```
-pip install -r requirements.txt
-```
-3. **Run the Script**: Navigate to the project's directory in your terminal and execute the main script:
-```
-python src/main.py
-```
-
-**Audio Input**  
-
-To use the program, run the main script and wait until it prompts you to drag and drop your audio file into the terminal. After the file path is displayed, press Enter. The program will then ask if you want to adjust the octaves before generating the transcribed guitar tablature, which will be saved to a file named `output.txt` in the same directory.
-
