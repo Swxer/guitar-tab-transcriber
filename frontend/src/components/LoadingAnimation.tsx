@@ -32,6 +32,7 @@ function LoadingAnimation() {
   const [note, setNote] = useState('')
   const [fret, setFret] = useState('')
   const [guitarString, setGuitarString] = useState('')
+  const [showColdStartMessage, setShowColdStartMessage] = useState(false)
 
   useEffect(() => {
     function update() {
@@ -45,7 +46,13 @@ function LoadingAnimation() {
 
     update()
     const interval = setInterval(update, 1800)
-    return () => clearInterval(interval)
+    const coldStartTimer = setTimeout(() => setShowColdStartMessage(true), 10000)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(coldStartTimer)
+    }
+      
   }, [])
 
   return (
@@ -58,7 +65,14 @@ function LoadingAnimation() {
           <span className="text-blue-400">{guitarString}</span>
         </div>
       </div>
-      <p className="text-gray-500 text-lg animate-pulse">Transcribing your audio...</p>
+
+      {showColdStartMessage ? (
+        <p className="text-gray-500 text-lg animate-pulse">Transcribing your audio...</p>
+      ) : (
+        <p className="text-gray-500 text-lg animate-pulse">
+          Still warming up, the server may be waking from sleep. Hang tight...
+        </p>
+      )}
     </div>
   )
 }
