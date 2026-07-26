@@ -46,7 +46,7 @@ function LoadingAnimation() {
 
     update()
     const interval = setInterval(update, 1800)
-    const coldStartTimer = setTimeout(() => setShowColdStartMessage(true), 10000)
+    const coldStartTimer = setTimeout(() => setShowColdStartMessage(true), 20000)
 
     return () => {
       clearInterval(interval)
@@ -66,7 +66,7 @@ function LoadingAnimation() {
         </div>
       </div>
 
-      {showColdStartMessage ? (
+      {!showColdStartMessage ? (
         <p className="text-gray-500 text-lg animate-pulse">Transcribing your audio...</p>
       ) : (
         <p className="text-gray-500 text-lg animate-pulse">
